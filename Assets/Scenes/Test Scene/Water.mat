@@ -133,7 +133,8 @@ Material:
     - _Metallic: 0
     - _Normal_Scale: 45.2
     - _Normal_Speed: 0.05
-    - _Normal_Strength: 2.5
+    - _Normal_Strength: 1
+    - _Occlusion: 0.5
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueControl: 0
