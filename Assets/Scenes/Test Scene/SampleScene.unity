@@ -227,6 +227,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Weak Enemy
       objectReference: {fileID: 0}
+    - target: {fileID: 4306771652356212294, guid: 9ff0521d3732b2d488ca4c653862c2a9, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -598,6 +602,10 @@ PrefabInstance:
     - target: {fileID: 5432050858788009288, guid: c442a893bbcd9a345aae8a18ea6149e0, type: 3}
       propertyPath: m_Name
       value: Weak Tower
+      objectReference: {fileID: 0}
+    - target: {fileID: 5432050858788009288, guid: c442a893bbcd9a345aae8a18ea6149e0, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

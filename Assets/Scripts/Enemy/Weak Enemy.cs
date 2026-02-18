@@ -9,6 +9,7 @@ public class WeakEnemy : BaseEnemy
     protected override void OnStart()
     {
         base.OnStart();
+        _initYDifference = transform.position.y - EnemyTower.transform.position.y;
         RandomizeMove();
     }
 
@@ -27,14 +28,14 @@ public class WeakEnemy : BaseEnemy
             yield return new WaitForSeconds(waitTime);
             
             var randomX = Random.Range(LocalWalkingBounds.min.x, LocalWalkingBounds.max.x) + EnemyTower.transform.position.x;
-            var randomY = Random.Range(LocalWalkingBounds.min.y, LocalWalkingBounds.max.y) + EnemyTower.transform.position.y;
+            var yPosition = EnemyTower.transform.position.y + _initYDifference;
             var randomZ = Random.Range(LocalWalkingBounds.min.z, LocalWalkingBounds.max.z) + EnemyTower.transform.position.z;
 
-            var randomPosition = new Vector3(randomX, randomY, randomZ);
-            Debug.Log(randomPosition);
+            var randomPosition = new Vector3(randomX, yPosition, randomZ);
             SetTargetPosition(randomPosition);
         }
     }
 
 
+    private float _initYDifference;
 }

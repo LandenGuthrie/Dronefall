@@ -373,15 +373,9 @@ public class TerrainGenerator : MonoBehaviour
     }
     private static float GetNoise(int seed, float u, float v, TerrainNoiseSettings settings)
     {
-        // 1. Initialize a PRNG with your seed
-        // Using System.Random is deterministic based on the seed provided.
-        System.Random prng = new System.Random(seed);
-    
-        // 2. Generate random offsets for each octave
-        // We create a separate offset for X and Y to avoid diagonal symmetry.
-        // We also generate unique offsets for each octave to prevent them from stacking directly on top of each other.
-        Vector2[] octaveOffsets = new Vector2[settings.Octaves];
-        for (int i = 0; i < settings.Octaves; i++)
+        var prng = new System.Random(seed);
+        var octaveOffsets = new Vector2[settings.Octaves];
+        for (var i = 0; i < settings.Octaves; i++)
         {
             // Keep the range reasonable (e.g., -100,000 to 100,000) to avoid floating point errors.
             float offsetX = prng.Next(-100000, 100000); 
@@ -396,13 +390,12 @@ public class TerrainGenerator : MonoBehaviour
 
         for (var i = 0; i < settings.Octaves; i++)
         {
-            // 3. Apply the offsets
-            // Note: We add the offset from our array, NOT the raw seed.
-            float sampleX = u * frequency + octaveOffsets[i].x;
-            float sampleY = v * frequency + octaveOffsets[i].y;
+            var sampleX = u * frequency + octaveOffsets[i].x;
+            var sampleY = v * frequency + octaveOffsets[i].y;
 
-            totalNoise += Mathf.PerlinNoise(sampleX, sampleY) * amplitude;
-        
+            // First layer of noise
+            totalNoise += (Mathf.PerlinNoise(sampleX, sampleY) * amplitude);
+            
             maxVal += amplitude;
             frequency *= settings.Lacunarity;
             amplitude *= settings.Persistence;
