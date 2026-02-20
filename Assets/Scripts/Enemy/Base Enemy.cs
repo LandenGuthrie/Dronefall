@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class BaseEnemy : MonoBehaviour
 {
-    [Header("Common Enemy Data")]
+    [Header("Common Enemy Data")] 
+    public EnemyType Type;
     public Transform EnemyTower;
     public Animator EnemyAnimations;
     
@@ -23,7 +24,7 @@ public class BaseEnemy : MonoBehaviour
 
     public void Start() => OnStart();
     public void Update() => OnUpdate();
-
+    
     protected virtual void OnStart()
     {
         _targetPosition = transform.position;
@@ -49,7 +50,7 @@ public class BaseEnemy : MonoBehaviour
             SetEnemyState(EnemyState.Idle);
         }
     }
-
+    
     public void SetTargetPosition(Vector3 targetPosition)
     {
         if (_targetPosition == targetPosition) return;
@@ -89,4 +90,11 @@ public enum EnemyState
 {
     Idle,
     Walking,
+}
+
+public enum EnemyType
+{
+    Weak = 0,
+    //Normal = 1,
+    //Strong = 2
 }

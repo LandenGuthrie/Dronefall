@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
+[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
 public class TerrainGenerator : MonoBehaviour
 {
     private static readonly Vector2Int TerrainTextureSize = new(512, 512);
@@ -43,6 +43,13 @@ public class TerrainGenerator : MonoBehaviour
         // Updating grass with height buffer - pass density so resolution matches
         _grassResolution = Mathf.CeilToInt(TerrainMeshSize / GrassDensity);
         _grassInstanceCount = _grassResolution * _grassResolution;
+        
+        GrassGenerator.InitializeGrassGenerator(_grassResolution, _grassInstanceCount,
+            TerrainMeshSize, 
+            transform.position,
+            GrassDensity,
+            new float[_grassInstanceCount],
+            Texture2D.whiteTexture);
     }
     
     public void GenerateTerrain(int terrainMeshResolution, int seed,
@@ -61,22 +68,11 @@ public class TerrainGenerator : MonoBehaviour
         TerrainMaterial.SetTexture(TerrainMaterialTextureID, _terrainColorMap);
         GetComponent<MeshRenderer>().material = TerrainMaterial;
         
-        if (!GrassGenerator.IsInitialized)
-        {
-            GrassGenerator.InitializeGrassGenerator(_grassResolution, _grassInstanceCount,
-                TerrainMeshSize, 
-                transform.position,
-                GrassDensity,
-                grassHeights,
-                _terrainGrassMask);
-            return;
-        }
         GrassGenerator.UpdateGrassMesh(
             transform.position,
             GrassDensity,
             grassHeights,
             _terrainGrassMask); 
-            
     }
     
     private void GenerateTerrainMesh(int terrainMeshResolution, float terrainHeightMultiplier)
@@ -139,7 +135,8 @@ public class TerrainGenerator : MonoBehaviour
         mesh.RecalculateTangents();
         mesh.RecalculateBounds();
 
-        GetComponent<MeshFilter>().mesh = mesh;
+        GetComponent<MeshFilter>().sharedMesh = mesh;
+        GetComponent<MeshCollider>().sharedMesh = mesh;
         GetComponent<MeshCollider>().sharedMesh = mesh;
     }
     

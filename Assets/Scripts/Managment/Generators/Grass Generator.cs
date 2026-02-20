@@ -4,7 +4,6 @@ using UnityEngine.Serialization;
 
 public class GrassGenerator : MonoBehaviour
 {
-    // ... (Keep existing ID definitions) ...
     private static readonly int ResolutionID = Shader.PropertyToID("resolution");
     private static readonly int TerrainSizeID = Shader.PropertyToID("terrain_size");
     private static readonly int StepSizeID = Shader.PropertyToID("step_size");
@@ -25,7 +24,6 @@ public class GrassGenerator : MonoBehaviour
     
     private void Update()
     {
-        // Only draw if buffers are initialized
         if (IsInitialized && _argsBuffer != null && _transformBuffer != null)
         {
             Graphics.DrawMeshInstancedIndirect(GrasMesh, 0, GrassMaterial, _bounds, _argsBuffer);
@@ -49,7 +47,7 @@ public class GrassGenerator : MonoBehaviour
         _transformBuffer.SetCounterValue(0); 
         
         _heightBuffer = new ComputeBuffer(_instanceCount, sizeof(float)); 
-        _heightBuffer.SetData(heights);
+        if (heights.Length > 0) _heightBuffer.SetData(heights);
 
         _argsBuffer = new ComputeBuffer(1, 5 * sizeof(uint), ComputeBufferType.IndirectArguments);
         var args = new uint[] {

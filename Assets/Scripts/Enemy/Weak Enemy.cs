@@ -1,11 +1,24 @@
+using System;
 using System.Collections;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class WeakEnemy : BaseEnemy
 {
     [SerializeField] private Bounds LocalWalkingBounds;
     [SerializeField] private Vector2 RandomizedMoveTime;
 
+    public void Awake()
+    {
+        _initYDifference = transform.position.y - EnemyTower.transform.position.y;
+    }
+    public void OnEnable()
+    {
+        var yPosition = EnemyTower.transform.position.y + _initYDifference;
+        transform.position = new Vector3(EnemyTower.position.x, yPosition, EnemyTower.position.z); 
+        SetTargetPosition(transform.position);
+    }
+    
     protected override void OnStart()
     {
         base.OnStart();
