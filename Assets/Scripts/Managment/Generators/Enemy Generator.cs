@@ -14,7 +14,21 @@ public class EnemyGenerator : MonoBehaviour
     [SerializeField] private LayerMask TerrainLayers;
 
     public void InitializeEnemyGenerator() => CreateEnemyCache();
+    private void CreateEnemyCache()
+    {
+        var enemyTypesCount = Enum.GetNames(typeof(EnemyType)).Length;
+        for (var i = 0; i < enemyTypesCount; i++)
+        {
+            for (var j = 0; j < CACHED_ENEMY_COUNT; j++)
+            {
+                var type = (EnemyType)i;
+                var enemyInstance = CreateEnemy(type);
+                _cachedEnemyPool.Add(enemyInstance, (true, type));
+            }
+        }
+    }
     
+    // --- PUBLIC FUNCTIONS ---
     public void SpawnEnemies(EnemySpawnSettings settings)
     {
         var totalEnemies = settings.EnemySpawningAmount.Sum(kvp => kvp.Value);
@@ -95,20 +109,7 @@ public class EnemyGenerator : MonoBehaviour
         }
     }
     
-    private void CreateEnemyCache()
-    {
-        var enemyTypesCount = Enum.GetNames(typeof(EnemyType)).Length;
-        for (var i = 0; i < enemyTypesCount; i++)
-        {
-            for (var j = 0; j < CACHED_ENEMY_COUNT; j++)
-            {
-                var type = (EnemyType)i;
-                var enemyInstance = CreateEnemy(type);
-                _cachedEnemyPool.Add(enemyInstance, (true, type));
-            }
-        }
-    }
-    
+    // --- UTIL ---
     private GameObject CreateEnemy(EnemyType type)
     {
         var prefab = GetEnemyPrefabFromType(type);
@@ -172,7 +173,6 @@ public class EnemyGenerator : MonoBehaviour
 
         return points;
     }
-    
     private float GetTargetEnemyHeight(Vector3 position)
     {
         var ray = new Ray(new Vector3(position.x, TARGET_Y_FINDER_HEIGHT, position.z), Vector3.down);

@@ -14,7 +14,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 23895687ede9c714fa73cff405b9a42e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2
+      value: 8.25
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 23895687ede9c714fa73cff405b9a42e, type: 3}
       propertyPath: m_LocalPosition.z
@@ -26,15 +26,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 23895687ede9c714fa73cff405b9a42e, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 23895687ede9c714fa73cff405b9a42e, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 23895687ede9c714fa73cff405b9a42e, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 23895687ede9c714fa73cff405b9a42e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -52,6 +52,22 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 25fafb0435f47794aaef4495663bc0bd, type: 2}
+    - target: {fileID: -4128383740851021839, guid: 23895687ede9c714fa73cff405b9a42e, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.7725329
+      objectReference: {fileID: 0}
+    - target: {fileID: -4128383740851021839, guid: 23895687ede9c714fa73cff405b9a42e, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.7725329
+      objectReference: {fileID: 0}
+    - target: {fileID: -4128383740851021839, guid: 23895687ede9c714fa73cff405b9a42e, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.7725329
+      objectReference: {fileID: 0}
+    - target: {fileID: -4128383740851021839, guid: 23895687ede9c714fa73cff405b9a42e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -2.626
+      objectReference: {fileID: 0}
     - target: {fileID: -1080328091026893687, guid: 23895687ede9c714fa73cff405b9a42e, type: 3}
       propertyPath: m_Materials.Array.size
       value: 1
@@ -66,7 +82,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 8058680b6854090409a721742c108202, type: 2}
     - target: {fileID: 919132149155446097, guid: 23895687ede9c714fa73cff405b9a42e, type: 3}
       propertyPath: m_Name
-      value: Enemy
+      value: Weak Enemy
       objectReference: {fileID: 0}
     - target: {fileID: 4214676757912042754, guid: 23895687ede9c714fa73cff405b9a42e, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -83,6 +99,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 23895687ede9c714fa73cff405b9a42e, type: 3}
       insertIndex: -1
       addedObject: {fileID: -534170851160994588}
+    - targetCorrespondingSourceObject: {fileID: -4258411891960909470, guid: 23895687ede9c714fa73cff405b9a42e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7235172556290799569}
   m_SourcePrefab: {fileID: 100100000, guid: 23895687ede9c714fa73cff405b9a42e, type: 3}
 --- !u!1 &4306771652356212294 stripped
 GameObject:
@@ -101,14 +120,66 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c44070e3973e6b647a8a2d4b48e12ce0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeakEnemy
+  Type: 0
   EnemyTower: {fileID: 0}
-  EnemyAnimations: {fileID: 0}
-  WalkSpeed: 0
-  RotationSpeed: 0
-  AnimationTransitionDuration: 0.3
+  EnemyAnimations: {fileID: 7235172556290799569}
+  WalkSpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  WalkSpeed: 0.5
+  RotationSpeed: 2
+  AnimationTransitionDuration: 0.1
   IdleAnimationName: Idle
   WalkAnimationName: Walk
   LocalWalkingBounds:
     m_Center: {x: 0.25, y: 8.25, z: 0.1}
-    m_Extent: {x: 3, y: 0, z: 3}
-  RandomizedMoveTime: {x: 0, y: 0}
+    m_Extent: {x: 2, y: 0, z: 2}
+  RandomizedMoveTime: {x: 4, y: 8}
+--- !u!1 &8350453109465139829 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -4258411891960909470, guid: 23895687ede9c714fa73cff405b9a42e, type: 3}
+  m_PrefabInstance: {fileID: 3964803943080868631}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &7235172556290799569
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8350453109465139829}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: e2671a9b2eca09148bb6540abc89f412, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

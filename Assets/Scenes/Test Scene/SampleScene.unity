@@ -220,6 +220,83 @@ MonoBehaviour:
   GrassMaterial: {fileID: 2100000, guid: 6c5c69ea5bd26b942ba2e2dc6ae61917, type: 2}
   ComputeShader: {fileID: 7200000, guid: 3e8455af1ed50814c8d75b9e03133381, type: 3}
   GrassScale: {x: 0.3, y: 0.3, z: 0.3}
+  Density: 0.2
+  DensityMapErosion: 0.005
+--- !u!1 &525480209
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 525480210}
+  - component: {fileID: 525480212}
+  - component: {fileID: 525480211}
+  m_Layer: 5
+  m_Name: Grass Mask View
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &525480210
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 525480209}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1605045534}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 1000, y: 1000}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &525480211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 525480209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &525480212
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 525480209}
+  m_CullTransparentMesh: 1
 --- !u!1 &602123609
 GameObject:
   m_ObjectHideFlags: 0
@@ -283,15 +360,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6f26cee55916db46bb6ee47ddacbe55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IslandGenerator
+  SelfInitialize: 0
   TerrainMeshSize: 100
-  AllowedNormalizedHeights:
-  - 0
-  - 0.05
-  - 0.1
-  - 0.2
-  - 0.3
-  - 0.4
-  - 0.6
+  TerrainLayers:
+  - Name: Sand
+    StartHeight: 0
+    TerrainColor: {r: 0.8751662, g: 0.8962264, b: 0.5538003, a: 1}
+    GenerateMask: 0
+    LayerMask: {fileID: 0}
+  - Name: High Valley
+    StartHeight: 0.15
+    TerrainColor: {r: 0.21693665, g: 0.6132076, b: 0.23619984, a: 1}
+    GenerateMask: 1
+    LayerMask: {fileID: 0}
   IslandHeightCurve:
     serializedVersion: 2
     m_Curve:
@@ -334,33 +415,20 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  TerrainLayers:
-  - Name: Sand
-    StartHeight: 0.15
-    TerrainColor: {r: 0.8751662, g: 0.8962264, b: 0.5538003, a: 1}
-    SlopeColor: {r: 0.6886792, g: 0.6886792, b: 0.6886792, a: 1}
-    SlopeThreshold: 1
-    SlopeBlend: 0.2
-  - Name: High Valley
-    StartHeight: 0.2
-    TerrainColor: {r: 0.33397114, g: 0.8962264, b: 0.35907188, a: 1}
-    SlopeColor: {r: 0.6901961, g: 0.6901961, b: 0.6901961, a: 1}
-    SlopeThreshold: 0.9
-    SlopeBlend: 0
-  ColorBlendSharpness: 25
-  SlopeWidth: 6
-  OverlayNoiseSettings:
+  BiomeBlendRange: 1
+  GlobalSlopeColor: {r: 0.6698113, g: 0.6698113, b: 0.6698113, a: 1}
+  GlobalSlopeThreshold: 0.3
+  OverlaySettings:
     Frequency: 20
     Amplitude: 0.1
     Octaves: 1
     Lacunarity: 1
-    Persistence: 0.2
+    Persistence: 1
+    TerrainHeightMultiplier: 0
+    UseSteppedHeights: 0
+    AllowedSteppedHeights: []
   OverlayNoiseStrength: 0.1
   TerrainMaterial: {fileID: 2100000, guid: ec2bafbd2426a43488e3dde071141a15, type: 2}
-  TerrainMaterialTextureID: _MainTex
-  GrassGenerator: {fileID: 505146261}
-  GrassDensity: 0.2
-  GrassGenerationThreshold: 0.15
 --- !u!4 &734272828
 Transform:
   m_ObjectHideFlags: 0
@@ -378,6 +446,7 @@ Transform:
   - {fileID: 505146260}
   - {fileID: 429187246}
   - {fileID: 1351608957}
+  - {fileID: 1583037187}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &734272829
@@ -490,6 +559,8 @@ Transform:
   m_Children:
   - {fileID: 1134118379}
   - {fileID: 1090645327}
+  - {fileID: 2042805034}
+  - {fileID: 1605045534}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1090645324
@@ -733,14 +804,84 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   TerrainGenerator: {fileID: 734272826}
+  GrassGenerator: {fileID: 505146261}
+  FoliageGenerator: {fileID: 1583037188}
+  EnemyGenerator: {fileID: 429187247}
   TerrainSettings:
-    FrequencyRange: {x: 2, y: 4}
-    AmplitudeRange: {x: 0.1, y: 0.5}
+    FrequencyRange: {x: 2, y: 3}
+    AmplitudeRange: {x: 0.15, y: 0.5}
     OctavesRange: {x: 1, y: 4}
-    LacunarityRange: {x: 1, y: 3}
+    LacunarityRange: {x: 1, y: 2}
     PersistenceRange: {x: 0.1, y: 1}
     TerrainHeightMultiplier: {x: 10, y: 30}
-  EnemyGenerator: {fileID: 429187247}
+    AllowedSteppedHeights:
+    - Name: Normal
+      Values:
+      - 0
+      - 0.05
+      - 0.1
+      - 0.15
+      - 0.2
+      - 0.25
+      - 0.3
+      - 0.35
+      - 0.4
+      - 0.45
+      - 0.5
+      - 0.55
+      - 0.6
+      - 0.65
+      - 0.7
+      - 0.75
+      - 0.8
+      - 0.85
+      - 0.9
+      - 0.95
+      - 1
+    - Name: Medium Hills
+      Values:
+      - 0
+      - 0.05
+      - 0.1
+      - 0.2
+      - 0.3
+      - 0.4
+      - 0.6
+      - 0.65
+      - 0.8
+      - 0.85
+      - 1
+    - Name: High Hills
+      Values:
+      - 0
+      - 0.05
+      - 0.1
+      - 0.3
+      - 0.5
+      - 0.8
+      - 1
+    - Name: Plains With Hills
+      Values:
+      - 0
+      - 0.05
+      - 0.1
+      - 0.15
+      - 0.2
+      - 0.25
+      - 0.3
+      - 0.5
+      - 0.8
+      - 1
+    - Name: Unbalanced
+      Values:
+      - 0
+      - 0.05
+      - 0.1
+      - 0.4
+      - 0.8
+      - 1
+  GrassLayerIndex: 1
+  GrassMaskViewImage: {fileID: 525480211}
 --- !u!4 &1410894749
 Transform:
   m_ObjectHideFlags: 0
@@ -749,13 +890,257 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1410894747}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -57.74188, y: 38.58397, z: -51.12994}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 2069546853}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1583037186
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1583037187}
+  - component: {fileID: 1583037188}
+  m_Layer: 0
+  m_Name: Foliage Generator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1583037187
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1583037186}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 734272828}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1583037188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1583037186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78dd21cf5af3e7c488e587b09ac8fecf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FoliageSpawner
+  SpawnerShader: {fileID: 7200000, guid: b0e97616e0c9a9449995d4b4ea148ef1, type: 3}
+  SelfInitialize: 0
+  ScatterConfig:
+    TerrainSize: 100
+    Padding: 10
+    JitterAmount: 10
+  FoliageModels:
+  - Name: Rock 1
+    InstanceMesh: {fileID: -1550514412580984892, guid: 83df2e60d209aa14cb31f80e2c5a34c2, type: 3}
+    InstanceMaterial: {fileID: 2100000, guid: ee3085a02b9e1604e82dec8fc270aff4, type: 2}
+    SpawnCount: 80
+    HeightOffset: 0
+    SpawnableLayer:
+      serializedVersion: 2
+      m_Bits: 64
+    MinRotation: {x: 0, y: -360, z: 0}
+    MaxRotation: {x: 0, y: 360, z: 0}
+    ScaleRange: {x: 0.06, y: 0.14}
+  - Name: Rock 2
+    InstanceMesh: {fileID: -5495902117074765545, guid: 6eaabe7a65767eb42bc1e4284047eb19, type: 3}
+    InstanceMaterial: {fileID: 2100000, guid: ee3085a02b9e1604e82dec8fc270aff4, type: 2}
+    SpawnCount: 80
+    HeightOffset: 0
+    SpawnableLayer:
+      serializedVersion: 2
+      m_Bits: 64
+    MinRotation: {x: 0, y: -360, z: 0}
+    MaxRotation: {x: 0, y: 360, z: 0}
+    ScaleRange: {x: 0.06, y: 0.14}
+  - Name: Rock 3
+    InstanceMesh: {fileID: -8678823145569952518, guid: 640a28d11239b934fa15843b8689c016, type: 3}
+    InstanceMaterial: {fileID: 2100000, guid: ee3085a02b9e1604e82dec8fc270aff4, type: 2}
+    SpawnCount: 80
+    HeightOffset: 0
+    SpawnableLayer:
+      serializedVersion: 2
+      m_Bits: 64
+    MinRotation: {x: 0, y: -360, z: 0}
+    MaxRotation: {x: 0, y: 360, z: 0}
+    ScaleRange: {x: 0.06, y: 0.14}
+--- !u!1 &1605045530
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1605045534}
+  - component: {fileID: 1605045533}
+  - component: {fileID: 1605045532}
+  - component: {fileID: 1605045531}
+  m_Layer: 5
+  m_Name: Testing
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1605045531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1605045530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GraphicRaycaster
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!114 &1605045532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1605045530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
+  m_UiScaleMode: 1
+  m_ReferencePixelsPerUnit: 100
+  m_ScaleFactor: 1
+  m_ReferenceResolution: {x: 1920, y: 1080}
+  m_ScreenMatchMode: 0
+  m_MatchWidthOrHeight: 0
+  m_PhysicalUnit: 3
+  m_FallbackScreenDPI: 96
+  m_DefaultSpriteDPI: 96
+  m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
+--- !u!223 &1605045533
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1605045530}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 0
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
+--- !u!224 &1605045534
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1605045530}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 525480210}
+  m_Father: {fileID: 1039018049}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0, y: 0}
+--- !u!1 &1668220996
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1668220997}
+  - component: {fileID: 1668220998}
+  m_Layer: 0
+  m_Name: Audio Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1668220997
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1668220996}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2069546853}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1668220998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1668220996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daaafeb74bf2413459ae280b7a2d1da2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  SelfInitialization: 1
+  MainMixer: {fileID: 24100000, guid: cf021303020ad96468ad1de3fbe758bb, type: 2}
+  Audios:
+  - Name: Music
+    Type: 1
+    Pitch: 1
+    Volume: 0.05
+    SoundClip: {fileID: 8300000, guid: 992847b6d322cfc4e8370c889171e215, type: 3}
+    MixerGroup: {fileID: 490485110604737468, guid: cf021303020ad96468ad1de3fbe758bb, type: 2}
+    RandomVolumeOffset: {x: 0, y: 0}
+    RandomPitchOffset: {x: 0, y: 0}
+    SpamPreventionTime: 0
+    PlayOnStart: 1
+    Loop: 1
 --- !u!1 &1719186775
 GameObject:
   m_ObjectHideFlags: 1
@@ -895,6 +1280,85 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2042805031
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2042805034}
+  - component: {fileID: 2042805033}
+  - component: {fileID: 2042805032}
+  m_Layer: 0
+  m_Name: EventSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2042805032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2042805031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.UI.InputSystemUIInputModule
+  m_SendPointerHoverToParent: 1
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_PointAction: {fileID: -1654692200621890270, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_MoveAction: {fileID: -8784545083839296357, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_SubmitAction: {fileID: 392368643174621059, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_CancelAction: {fileID: 7727032971491509709, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_LeftClickAction: {fileID: 3001919216989983466, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_MiddleClickAction: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_RightClickAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_ScrollWheelAction: {fileID: 6240969308177333660, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_TrackedDevicePositionAction: {fileID: 6564999863303420839, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 7970375526676320489, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
+  m_ScrollDeltaPerTick: 6
+--- !u!114 &2042805033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2042805031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventSystem
+  m_FirstSelected: {fileID: 0}
+  m_sendNavigationEvents: 1
+  m_DragThreshold: 10
+--- !u!4 &2042805034
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2042805031}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.30744, y: -0.5, z: -1.82288}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1039018049}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2043928530
 GameObject:
@@ -1056,6 +1520,39 @@ MonoBehaviour:
   minDistance: 2
   maxDistance: 120
   smoothTime: 0.15
+--- !u!1 &2069546852
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2069546853}
+  m_Layer: 0
+  m_Name: Managers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2069546853
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2069546852}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1410894749}
+  - {fileID: 1668220997}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1063,6 +1560,6 @@ SceneRoots:
   - {fileID: 2043928533}
   - {fileID: 1935943566}
   - {fileID: 734272828}
+  - {fileID: 2069546853}
   - {fileID: 1719186777}
-  - {fileID: 1410894749}
   - {fileID: 1039018049}

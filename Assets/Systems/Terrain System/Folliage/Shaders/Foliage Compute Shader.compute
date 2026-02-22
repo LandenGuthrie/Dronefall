@@ -1,0 +1,77 @@
+#pragma kernel CSMain
+
+struct ModelDescription 
+{
+    int SpawnCount;
+    float HeightOffset;
+    float3 MinRotation;
+    float3 MaxRotation;
+    float2 ScaleRange;
+};
+
+float map_size;
+float padding;
+float jitter_amount;
+int config_index;
+
+StructuredBuffer<ModelDescription> model_config;
+RWStructuredBuffer<float4x4> transform_buffer;
+
+float rand(float2 uv) 
+{
+    return frac(sin(dot(uv, float2(12.9898, 78.233))) * 43758.5453123);
+}
+
+float4x4 TRS(float3 pos, float3 rot, float3 scale) 
+{
+    float radX = radians(rot.x);
+    float radY = radians(rot.y);
+    float radZ = radians(rot.z);
+
+    float cx = cos(radX), sx = sin(radX);
+    float cy = cos(radY), sy = sin(radY);
+    float cz = cos(radZ), sz = sin(radZ);
+
+    return float4x4(
+        scale.x * (cy * cz + sx * sy * sz), scale.y * (cz * sx * sy - cy * sz), scale.z * (cx * sy), pos.x,
+        scale.x * (cx * sz),                scale.y * (cx * cz),                scale.z * (-sx),     pos.y,
+        scale.x * (cy * sx * sz - cz * sy), scale.y * (cy * cz * sx + sy * sz), scale.z * (cx * cy), pos.z,
+        0,                                  0,                                  0,                   1
+    );
+}
+
+[numthreads(64, 1, 1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    ModelDescription config = model_config[config_index];
+    if ((int)id.x >= config.SpawnCount) return;
+
+    int gridWidth = ceil(sqrt((float)config.SpawnCount));
+    int gridX = id.x % gridWidth;
+    int gridY = id.x / gridWidth;
+
+    float2 seed = float2(gridX, gridY) * 0.1337f;
+    float randX = rand(seed);
+    float randY = rand(seed + 1.0f);
+    float randZ = rand(seed + 2.0f);
+    
+    // 1. Shrink the usable space by the padding
+    float usableSize = map_size - (padding * 2.0f);
+    
+    // 2. Automatically determine distance between objects so they hit the corners
+    float cellSize = (gridWidth > 1) ? (usableSize / (float)(gridWidth - 1)) : 0.0f;
+    
+    // 3. Shift the starting position to the bottom-left corner of the centered usable area
+    float startPos = (gridWidth > 1) ? (-usableSize * 0.5f) : 0.0f;
+    
+    // 4. Calculate centered positions
+    float posX = startPos + (gridX * cellSize) + ((randX - 0.5f) * jitter_amount);
+    float posZ = startPos + (gridY * cellSize) + ((randY - 0.5f) * jitter_amount);
+    
+    float3 finalPos = float3(posX, 0, posZ);
+    float3 rot = lerp(config.MinRotation, config.MaxRotation, float3(randX, randY, randZ));
+    float scaleUniform = lerp(config.ScaleRange.x, config.ScaleRange.y, randX);
+    float3 finalScale = float3(scaleUniform, scaleUniform, scaleUniform);
+
+    transform_buffer[id.x] = TRS(finalPos, rot, finalScale);
+}

@@ -1,23 +1,40 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    [Header("Island Settings")]
+    [Header("Dependencies")]
     public TerrainGenerator TerrainGenerator;
-    public RandomRangeNoiseSettings TerrainSettings;
+    public GrassGenerator GrassGenerator;
+    public FoliageGenerator FoliageGenerator;
     public EnemyGenerator EnemyGenerator;
+    
+    [Header("Settings")]
+    public RandomRangeNoiseSettings TerrainSettings; 
+    public int GrassLayerIndex;
+    
+    [Header("Testing")]
+    public Image GrassMaskViewImage;
     
     public void Start()
     {
         Instance = this;
         
         // Generating random island
+        var terrainSize = TerrainGenerator.TerrainMeshSize;
+        var terrainPosition = TerrainGenerator.transform.position;
+        
+        GrassGenerator.SetCachedData(TerrainGenerator.TerrainMeshSize, TerrainGenerator.transform.position);
+        GrassSettings grassSettings = new(new float[GrassGenerator.InstanceCount], Texture2D.whiteTexture);
+        GrassGenerator.InitializeGrassGenerator(grassSettings);
+        
         TerrainGenerator.InitializeTerrainGenerator();
+        FoliageGenerator.InitializeComputeShader();
         EnemyGenerator.InitializeEnemyGenerator();
         GenerateRandomIsland();
     }
@@ -37,15 +54,31 @@ public class GameManager : MonoBehaviour
         var lacunarity = Random.Range(TerrainSettings.LacunarityRange.x, TerrainSettings.LacunarityRange.y);
         var persistence = Random.Range(TerrainSettings.PersistenceRange.x, TerrainSettings.PersistenceRange.y);
         var terrainHeightMultiplier = Random.Range(TerrainSettings.TerrainHeightMultiplier.x, TerrainSettings.TerrainHeightMultiplier.y);
-        var terrainNoiseSettings = new TerrainNoiseSettings()
+        var allowedSteppedHeights = TerrainSettings.AllowedSteppedHeights[Random.Range(0, TerrainSettings.AllowedSteppedHeights.Count)];
+        
+        var terrainNoiseSettings = new TerrainSettings()
         {
             Frequency = frequency,
             Amplitude = amplitude,
             Octaves = octaves,
             Lacunarity = lacunarity,
-            Persistence = persistence
+            Persistence = persistence,
+            TerrainHeightMultiplier = terrainHeightMultiplier,
+            UseSteppedHeights = true,
+            AllowedSteppedHeights = allowedSteppedHeights.Values
         };
-        TerrainGenerator.GenerateTerrain(TerrainGenerator.TerrainMeshSize, randomSeed, terrainNoiseSettings, terrainHeightMultiplier);
+        
+        TerrainGenerator.GenerateTerrain(randomSeed, terrainNoiseSettings);
+        GrassGenerator.UpdateGrassMesh(TerrainGenerator.CalculateHeightsID(GrassGenerator.Resolution, terrainHeightMultiplier), TerrainGenerator.TerrainLayers[GrassLayerIndex].LayerMask);
+        FoliageGenerator.UpdateComputeShader();
+        
+        // Creating grass mask view image texture
+        if (GrassMaskViewImage.isActiveAndEnabled)
+        {
+            var tex = TerrainGenerator.TerrainLayers[GrassLayerIndex].LayerMask;
+            var sprite = Sprite.Create(tex, new Rect(Vector2.zero, new Vector2(tex.width, tex.height)), new Vector2(0.5f, 0.5f));
+            GrassMaskViewImage.sprite = sprite;
+        }
         
         // Enemies
         EnemyGenerator.ReturnAllEnemiesToPool();
@@ -69,4 +102,13 @@ public struct RandomRangeNoiseSettings
     public Vector2 PersistenceRange;
 
     public Vector2 TerrainHeightMultiplier;
+    
+    public List<ArrayWrapper> AllowedSteppedHeights;
+}
+
+[Serializable]
+public struct ArrayWrapper
+{
+    public string Name;
+    public float[] Values;
 }
