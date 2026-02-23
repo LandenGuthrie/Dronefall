@@ -168,7 +168,7 @@ MonoBehaviour:
     Prefab: {fileID: 5432050858788009288, guid: c442a893bbcd9a345aae8a18ea6149e0, type: 3}
   WorldSpawningBounds:
     m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 60, y: 0, z: 60}
+    m_Extent: {x: 45, y: 0, z: 45}
   TerrainLayers:
     serializedVersion: 2
     m_Bits: 64
@@ -438,14 +438,13 @@ Transform:
   m_GameObject: {fileID: 734272825}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 602123610}
   - {fileID: 505146260}
   - {fileID: 429187246}
-  - {fileID: 1351608957}
   - {fileID: 1583037187}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -620,7 +619,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 12
   m_Type: 1
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -699,6 +698,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1134118379}
+  - component: {fileID: 1134118380}
   m_Layer: 0
   m_Name: Global Volume
   m_TagString: Untagged
@@ -721,59 +721,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1039018049}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1351608956
-GameObject:
+--- !u!114 &1134118380
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1351608957}
-  - component: {fileID: 1351608958}
-  m_Layer: 6
-  m_Name: Terrain Bounds
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1351608957
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1351608956}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 150, y: 0.1, z: 150}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 734272828}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1351608958
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1351608956}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_GameObject: {fileID: 1134118377}
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: be645b195b3a5354685636cc089f0779, type: 2}
 --- !u!1 &1410894747
 GameObject:
   m_ObjectHideFlags: 0
@@ -875,8 +839,7 @@ MonoBehaviour:
     - Name: Unbalanced
       Values:
       - 0
-      - 0.05
-      - 0.1
+      - 0.2
       - 0.4
       - 0.8
       - 1
@@ -945,13 +908,15 @@ MonoBehaviour:
   SelfInitialize: 0
   ScatterConfig:
     TerrainSize: 100
-    Padding: 10
-    JitterAmount: 10
+    Padding: 0
+    JitterAmount: 25
   FoliageModels:
   - Name: Rock 1
     InstanceMesh: {fileID: -1550514412580984892, guid: 83df2e60d209aa14cb31f80e2c5a34c2, type: 3}
-    InstanceMaterial: {fileID: 2100000, guid: ee3085a02b9e1604e82dec8fc270aff4, type: 2}
-    SpawnCount: 80
+    SpatialGroupID: 0
+    InstanceMaterials:
+    - {fileID: 2100000, guid: ee3085a02b9e1604e82dec8fc270aff4, type: 2}
+    SpawnCount: 30
     HeightOffset: 0
     SpawnableLayer:
       serializedVersion: 2
@@ -961,8 +926,10 @@ MonoBehaviour:
     ScaleRange: {x: 0.06, y: 0.14}
   - Name: Rock 2
     InstanceMesh: {fileID: -5495902117074765545, guid: 6eaabe7a65767eb42bc1e4284047eb19, type: 3}
-    InstanceMaterial: {fileID: 2100000, guid: ee3085a02b9e1604e82dec8fc270aff4, type: 2}
-    SpawnCount: 80
+    SpatialGroupID: 0
+    InstanceMaterials:
+    - {fileID: 2100000, guid: ee3085a02b9e1604e82dec8fc270aff4, type: 2}
+    SpawnCount: 30
     HeightOffset: 0
     SpawnableLayer:
       serializedVersion: 2
@@ -972,8 +939,10 @@ MonoBehaviour:
     ScaleRange: {x: 0.06, y: 0.14}
   - Name: Rock 3
     InstanceMesh: {fileID: -8678823145569952518, guid: 640a28d11239b934fa15843b8689c016, type: 3}
-    InstanceMaterial: {fileID: 2100000, guid: ee3085a02b9e1604e82dec8fc270aff4, type: 2}
-    SpawnCount: 80
+    SpatialGroupID: 0
+    InstanceMaterials:
+    - {fileID: 2100000, guid: ee3085a02b9e1604e82dec8fc270aff4, type: 2}
+    SpawnCount: 30
     HeightOffset: 0
     SpawnableLayer:
       serializedVersion: 2
@@ -981,6 +950,62 @@ MonoBehaviour:
     MinRotation: {x: 0, y: -360, z: 0}
     MaxRotation: {x: 0, y: 360, z: 0}
     ScaleRange: {x: 0.06, y: 0.14}
+  - Name: Tree 1
+    InstanceMesh: {fileID: -3877841677461667978, guid: e819a2388e575654490e2a61dc00a8bf, type: 3}
+    SpatialGroupID: 1
+    InstanceMaterials:
+    - {fileID: 2100000, guid: 68298fb91008d624d81b6889e3490575, type: 2}
+    - {fileID: 2100000, guid: 75901256c1f2ebe4da9d77f80556d739, type: 2}
+    SpawnCount: 3
+    HeightOffset: 0
+    SpawnableLayer:
+      serializedVersion: 2
+      m_Bits: 64
+    MinRotation: {x: 0, y: -360, z: 0}
+    MaxRotation: {x: 0, y: 360, z: 0}
+    ScaleRange: {x: 1.2, y: 1.4}
+  - Name: Tree 2
+    InstanceMesh: {fileID: 9220752393442684223, guid: fd3e4f3e889465448aba4ff9a57d23e9, type: 3}
+    SpatialGroupID: 1
+    InstanceMaterials:
+    - {fileID: 2100000, guid: e0ba9dbb5b054f8408eb669393d30364, type: 2}
+    - {fileID: 2100000, guid: 394725fa6cef4644e8e81419959d77b6, type: 2}
+    SpawnCount: 3
+    HeightOffset: 0
+    SpawnableLayer:
+      serializedVersion: 2
+      m_Bits: 64
+    MinRotation: {x: 0, y: -360, z: 0}
+    MaxRotation: {x: 0, y: 360, z: 0}
+    ScaleRange: {x: 1.2, y: 1.4}
+  - Name: Tree 3
+    InstanceMesh: {fileID: -2321339400001982347, guid: 8f44b00432c547a4b8de6dafbcfe97a8, type: 3}
+    SpatialGroupID: 1
+    InstanceMaterials:
+    - {fileID: 2100000, guid: 3cc900fa88f737344ad519bcf17c4558, type: 2}
+    - {fileID: 2100000, guid: e16a746aa1b41f4468ce8c5728d321c3, type: 2}
+    SpawnCount: 3
+    HeightOffset: 0
+    SpawnableLayer:
+      serializedVersion: 2
+      m_Bits: 64
+    MinRotation: {x: 0, y: -360, z: 0}
+    MaxRotation: {x: 0, y: 360, z: 0}
+    ScaleRange: {x: 1.2, y: 1.4}
+  - Name: Tree 4
+    InstanceMesh: {fileID: -421286816377248649, guid: f2781b12a7cdce847bc9dfbab3a5bad1, type: 3}
+    SpatialGroupID: 1
+    InstanceMaterials:
+    - {fileID: 2100000, guid: 3cc900fa88f737344ad519bcf17c4558, type: 2}
+    - {fileID: 2100000, guid: e16a746aa1b41f4468ce8c5728d321c3, type: 2}
+    SpawnCount: 3
+    HeightOffset: 0
+    SpawnableLayer:
+      serializedVersion: 2
+      m_Bits: 64
+    MinRotation: {x: 0, y: -360, z: 0}
+    MaxRotation: {x: 0, y: 360, z: 0}
+    ScaleRange: {x: 1.2, y: 1.4}
 --- !u!1 &1605045530
 GameObject:
   m_ObjectHideFlags: 0
@@ -1275,7 +1300,7 @@ Transform:
   m_GameObject: {fileID: 1935943562}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0, z: 0}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1000, y: 1, z: 1000}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1398,7 +1423,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0.85882354, b: 1, a: 0}
+  m_BackGroundColor: {r: 0.14509805, g: 0.8784314, b: 1, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1477,7 +1502,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0

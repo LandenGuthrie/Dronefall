@@ -5,50 +5,105 @@ using Random = UnityEngine.Random;
 
 public class WeakEnemy : BaseEnemy
 {
-    [SerializeField] private Bounds LocalWalkingBounds;
-    [SerializeField] private Vector2 RandomizedMoveTime;
+    [Header("Configuration")]
+    [SerializeField] private WeakEnemySettings EnemySettings;
 
-    public void Awake()
+    [Header("References")]
+    [SerializeField] private Transform ConfusedIndicator;
+
+    //--- Unity
+    private void Awake()
     {
-        _initYDifference = transform.position.y - EnemyTower.transform.position.y;
+        _initYDifference = transform.position.y - Tower.position.y;
     }
-    public void OnEnable()
+    private void OnEnable()
     {
-        var yPosition = EnemyTower.transform.position.y + _initYDifference;
-        transform.position = new Vector3(EnemyTower.position.x, yPosition, EnemyTower.position.z); 
+        var yPosition = Tower.position.y + _initYDifference;
+        transform.position = new Vector3(Tower.position.x, yPosition, Tower.position.z); 
         SetTargetPosition(transform.position);
+        StartCoroutine(AILoop());
     }
-    
-    protected override void OnStart()
+    protected override void Update()
     {
-        base.OnStart();
-        _initYDifference = transform.position.y - EnemyTower.transform.position.y;
-        RandomizeMove();
+        base.Update();
+        if (CurrentState == EnemyState.Confused)
+        {
+            var confusedIndictorRotation = Quaternion.LookRotation(Camera.main.transform.position - ConfusedIndicator.position, Vector3.up);
+            ConfusedIndicator.rotation = Quaternion.Euler(0, confusedIndictorRotation.eulerAngles.y + EnemySettings.ConfusedRotationOffset, 0);
+        }
+    }
+    private void OnDrawGizmos()
+    {
+        if (!EnemySettings.ShowGizmos || Tower == null) return;
+        var oldMatrix = Gizmos.matrix;
+        Gizmos.matrix = Tower.localToWorldMatrix;
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireCube(EnemySettings.LocalWalkingBounds.center, EnemySettings.LocalWalkingBounds.size);
+        Gizmos.matrix = oldMatrix;
     }
 
-    public void RandomizeMove()
+    //--- StateOverrides
+    protected override void OnConfusedStart()
     {
-        StartCoroutine(Walk(0));
-        OnIdle += () =>
+        base.OnConfusedStart();
+        ConfusedIndicator.gameObject.SetActive(true);
+        PlayAnimation(EnemySettings.ConfusedAnimationName);
+    }
+    protected override void OnIdleStart()
+    {
+        base.OnIdleStart();
+        if (ConfusedIndicator != null)
         {
-            var randomDuration = Random.Range(RandomizedMoveTime.x, RandomizedMoveTime.y);
-            StartCoroutine(Walk(randomDuration));
-        };
-        return;
-
-        IEnumerator Walk(float waitTime)
-        {
-            yield return new WaitForSeconds(waitTime);
-            
-            var randomX = Random.Range(LocalWalkingBounds.min.x, LocalWalkingBounds.max.x) + EnemyTower.transform.position.x;
-            var yPosition = EnemyTower.transform.position.y + _initYDifference;
-            var randomZ = Random.Range(LocalWalkingBounds.min.z, LocalWalkingBounds.max.z) + EnemyTower.transform.position.z;
-
-            var randomPosition = new Vector3(randomX, yPosition, randomZ);
-            SetTargetPosition(randomPosition);
+            ConfusedIndicator.gameObject.SetActive(false);
         }
     }
 
+    //--- AILogic
+    private IEnumerator AILoop()
+    {
+        while (true)
+        {
+            var randomDuration = Random.Range(EnemySettings.RandomizedMoveTime.x, EnemySettings.RandomizedMoveTime.y);
+            yield return new WaitForSeconds(randomDuration);
+            if (EnemySettings.ConfusedChance / 100f >= Random.value)
+            {
+                yield return StartCoroutine(ConfusionRoutine());
+            }
+            else
+            {
+                Walk();
+                yield return new WaitUntil(() => CurrentState == EnemyState.Idle);
+            }
+        }
+    }
+    private IEnumerator ConfusionRoutine()
+    {
+        SetEnemyState(EnemyState.Confused);
+        var confusedDuration = Random.Range(EnemySettings.ConfusedTimeRange.x, EnemySettings.ConfusedTimeRange.y);
+        yield return new WaitForSeconds(confusedDuration);
+        SetEnemyState(EnemyState.Idle);
+    }
+    private void Walk()
+    {
+        var randomLocalX = Random.Range(EnemySettings.LocalWalkingBounds.min.x, EnemySettings.LocalWalkingBounds.max.x);
+        var randomLocalZ = Random.Range(EnemySettings.LocalWalkingBounds.min.z, EnemySettings.LocalWalkingBounds.max.z);
+        var localPosition = new Vector3(randomLocalX, 0f, randomLocalZ);
+        var worldPosition = Tower.TransformPoint(localPosition);
+        worldPosition.y = Tower.position.y + _initYDifference;
+        SetTargetPosition(worldPosition);
+    }
 
     private float _initYDifference;
+}
+
+[Serializable]
+public struct WeakEnemySettings
+{
+    public Bounds LocalWalkingBounds;
+    public Vector2 RandomizedMoveTime;
+    public float ConfusedRotationOffset;
+    [Range(0, 100)] public float ConfusedChance;
+    public Vector2 ConfusedTimeRange;
+    public string ConfusedAnimationName;
+    public bool ShowGizmos;
 }

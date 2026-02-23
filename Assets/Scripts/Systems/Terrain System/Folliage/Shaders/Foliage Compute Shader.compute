@@ -2,17 +2,18 @@
 
 struct ModelDescription 
 {
+    float4 MinRotation;
+    float4 MaxRotation;
+    float2 ScaleRange;
     int SpawnCount;
     float HeightOffset;
-    float3 MinRotation;
-    float3 MaxRotation;
-    float2 ScaleRange;
 };
 
 float map_size;
 float padding;
 float jitter_amount;
 int config_index;
+
 
 StructuredBuffer<ModelDescription> model_config;
 RWStructuredBuffer<float4x4> transform_buffer;
@@ -50,7 +51,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int gridX = id.x % gridWidth;
     int gridY = id.x / gridWidth;
 
-    float2 seed = float2(gridX, gridY) * 0.1337f;
+    float2 seed = float2(gridX + config_index * 127, gridY + config_index * 311) * 0.1337f;
     float randX = rand(seed);
     float randY = rand(seed + 1.0f);
     float randZ = rand(seed + 2.0f);

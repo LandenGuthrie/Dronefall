@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 public class EnemyGenerator : MonoBehaviour
 {
-    public const int CACHED_ENEMY_COUNT = 16; // Perfect square
+    public const int CACHED_ENEMY_COUNT = 16;
     public const int TARGET_Y_FINDER_HEIGHT = 100;
 
     [SerializeField] private List<Enemy> EnemyTypes;
@@ -27,54 +27,49 @@ public class EnemyGenerator : MonoBehaviour
             }
         }
     }
-    
+
     // --- PUBLIC FUNCTIONS ---
-    public void SpawnEnemies(EnemySpawnSettings settings)
+    public void SpawnEnemies(EnemySpawnSettings settings, Texture2D spawnMask = null)
     {
         var totalEnemies = settings.EnemySpawningAmount.Sum(kvp => kvp.Value);
         if (totalEnemies == 0) return;
 
-        var spawnPointsXZ = GenerateUniformGridPoints(totalEnemies);
+        var sampler = new MitchellsBestCandidateSampler(WorldSpawningBounds, WorldSpawningBounds, spawnMask);
 
-        var pointIndex = 0;
         foreach (var (type, amount) in settings.EnemySpawningAmount)
         {
             if (amount > CACHED_ENEMY_COUNT) throw new Exception("Cant request more enemies than what is cached.");
-            
-            for (var i = 0; i < amount; i++)
+
+            var placed = 0;
+            int maxAttempts = amount * 20; 
+            int attempts = 0;
+
+            while (placed < amount && attempts < maxAttempts)
             {
-                if (pointIndex >= spawnPointsXZ.Count) break; 
+                attempts++;
 
-                var positionXZ = spawnPointsXZ[pointIndex];
-                pointIndex++;
-
-                // Adding random offset
-                var xRange = Random.Range(settings.RandomOffset.x, settings.RandomOffset.y);
-                var zRange = Random.Range(settings.RandomOffset.x, settings.RandomOffset.y);
-
-                // 2. Flip a coin for the X and Z directions independently!
-                // Random.value > 0.5f gives a true 50% chance to be positive or negative
-                float signX = Random.value > 0.5f ? 1f : -1f;
-                float signZ = Random.value > 0.5f ? 1f : -1f;
-
-                // Apply the offset and the randomized direction
-                positionXZ += new Vector2(xRange * signX, zRange * signZ);
-                
-                var height = GetTargetEnemyHeight(new Vector3(positionXZ.x, 0, positionXZ.y));
-                var finalPosition = new Vector3(positionXZ.x, height, positionXZ.y);
-                
-                float randomRotation = Random.Range(0, 360);
-                
-                
-                PlaceEnemy(type, finalPosition, Quaternion.Euler(0, randomRotation, 0));
+                // TryGetNextCandidate inherently spaces things out uniformly
+                if (sampler.TryGetNextCandidate(out var positionXZ))
+                {
+                    if (TryGetEnemyHeight(new Vector3(positionXZ.x, 0f, positionXZ.y), out var height))
+                    {
+                        PlaceEnemy(type, new Vector3(positionXZ.x, height, positionXZ.y), Quaternion.Euler(0, Random.Range(0, 360), 0));
+                        
+                        // CRITICAL: Only tell the sampler this spot is taken AFTER physics passes
+                        sampler.RegisterAcceptedPosition(positionXZ);
+                        placed++; 
+                    }
+                }
             }
+
+            if (placed < amount)
+                Debug.LogWarning($"[EnemyGenerator] Placed {placed}/{amount}. Out of physical space.");
         }
-    }    
+    }
     public void PlaceEnemy(EnemyType type, Vector3 position, Quaternion rotation)
     {
         var enemy = GetCachedEnemyFromPool(type);
         _cachedEnemyPool[enemy] = (false, type);
-       
         enemy.transform.position = position;
         enemy.transform.rotation = rotation;
         enemy.SetActive(true);
@@ -102,101 +97,54 @@ public class EnemyGenerator : MonoBehaviour
         for (var i = 0; i < _cachedEnemyPool.Count; i++)
         {
             var (instance, (inPool, type)) = _cachedEnemyPool.ElementAt(i);
-
             if (inPool) continue;
-            
             ReturnEnemyToPool(instance, type);
         }
     }
-    
+
     // --- UTIL ---
     private GameObject CreateEnemy(EnemyType type)
     {
         var prefab = GetEnemyPrefabFromType(type);
-        
-        var enemyInstance = Instantiate(prefab, transform.position, Quaternion.identity);
+        var enemyInstance = Instantiate(prefab, transform.position, Quaternion.identity, transform);
         enemyInstance.SetActive(false);
-
         return enemyInstance;
     }
     private GameObject GetEnemyPrefabFromType(EnemyType type)
     {
         foreach (var enemy in EnemyTypes.Where(enemy => enemy.Type == type))
-        {
             return enemy.Prefab;
-        }
-
         throw new Exception("No enemy prefab found from the given type.");
     }
     private GameObject GetCachedEnemyFromPool(EnemyType type)
     {
         foreach (var enemy in _cachedEnemyPool.Where(enemy => enemy.Value.inPool && enemy.Value.enemyType == type))
-        {
             return enemy.Key;
-        }
         throw new Exception("No enemy available with the given type.");
     }
-    
-    private List<Vector2> GenerateUniformGridPoints(int totalEnemies)
-    {
-        var points = new List<Vector2>();
-
-        var width = WorldSpawningBounds.size.x;
-        var depth = WorldSpawningBounds.size.z;
-
-        // 1. Calculate the optimal number of columns and rows to fit the exact amount of enemies
-        // while keeping the grid proportionally scaled to the bounds (so cells stay roughly square)
-        var ratio = width / depth;
-        var cols = Mathf.CeilToInt(Mathf.Sqrt(totalEnemies * ratio));
-        var rows = Mathf.CeilToInt((float)totalEnemies / cols);
-
-        // 2. Fix the target value by using the size of the bounds.
-        // This naturally solves your rule: it spans the whole island, and shrinks ONLY if it needs to.
-        var cellWidth = width / cols;
-        var cellDepth = depth / rows;
-
-        // 3. Find our starting point (the exact center of the bottom-leftmost cell)
-        var startX = WorldSpawningBounds.min.x + (cellWidth / 2f);
-        var startZ = WorldSpawningBounds.min.z + (cellDepth / 2f);
-
-        // 4. Loop through and create a point for every enemy requested
-        for (var i = 0; i < totalEnemies; i++)
-        {
-            var row = i / cols;
-            var col = i % cols;
-
-            var x = startX + (col * cellWidth);
-            var z = startZ + (row * cellDepth);
-
-            points.Add(new Vector2(x, z));
-        }
-
-        return points;
-    }
-    private float GetTargetEnemyHeight(Vector3 position)
+    private bool TryGetEnemyHeight(Vector3 position, out float height)
     {
         var ray = new Ray(new Vector3(position.x, TARGET_Y_FINDER_HEIGHT, position.z), Vector3.down);
         if (Physics.Raycast(ray, out var hit, TARGET_Y_FINDER_HEIGHT * 2, TerrainLayers))
         {
-            return hit.point.y;
+            height = hit.point.y;
+            return true;
         }
-
-        throw new Exception("Unable to find height at position.");
+        height = 0f;
+        return false;
     }
-    
+
     private readonly Dictionary<GameObject, (bool inPool, EnemyType enemyType)> _cachedEnemyPool = new();
 }
 
 public struct EnemySpawnSettings
 {
     public readonly Dictionary<EnemyType, int> EnemySpawningAmount;
-    public float TargetEnemySpawnDistance;
     public Vector2 RandomOffset;
-    
-    public EnemySpawnSettings(Dictionary<EnemyType, int> enemySpawningAmount, float targetSpawnDistance, Vector2 randomOffset)
+
+    public EnemySpawnSettings(Dictionary<EnemyType, int> enemySpawningAmount, Vector2 randomOffset)
     {
         EnemySpawningAmount = enemySpawningAmount;
-        TargetEnemySpawnDistance = targetSpawnDistance;
         RandomOffset = randomOffset;
     }
 }

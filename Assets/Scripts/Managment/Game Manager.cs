@@ -69,8 +69,10 @@ public class GameManager : MonoBehaviour
         };
         
         TerrainGenerator.GenerateTerrain(randomSeed, terrainNoiseSettings);
-        GrassGenerator.UpdateGrassMesh(TerrainGenerator.CalculateHeightsID(GrassGenerator.Resolution, terrainHeightMultiplier), TerrainGenerator.TerrainLayers[GrassLayerIndex].LayerMask);
-        FoliageGenerator.UpdateComputeShader();
+
+        var mask = TerrainGenerator.TerrainLayers[GrassLayerIndex].LayerMask;
+        GrassGenerator.UpdateGrassMesh(TerrainGenerator.CalculateHeightsID(GrassGenerator.Resolution, terrainHeightMultiplier), mask);
+        FoliageGenerator.UpdateComputeShader(mask);
         
         // Creating grass mask view image texture
         if (GrassMaskViewImage.isActiveAndEnabled)
@@ -87,8 +89,8 @@ public class GameManager : MonoBehaviour
             new Dictionary<EnemyType, int>()
             {
                 { EnemyType.Weak, randomWeakEnemyCount }
-            }, 10, new Vector2(4, 8));
-        EnemyGenerator.SpawnEnemies(spawnSettings);
+            }, new Vector2(4, 8));
+        EnemyGenerator.SpawnEnemies(spawnSettings, mask);
     }
 }
 
