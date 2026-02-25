@@ -28,7 +28,7 @@ public class EnemyGenerator : MonoBehaviour
         }
     }
 
-    // --- PUBLIC FUNCTIONS ---
+    // --- Execution ---
     public void SpawnEnemies(EnemySpawnSettings settings, Texture2D spawnMask = null)
     {
         var totalEnemies = settings.EnemySpawningAmount.Sum(kvp => kvp.Value);

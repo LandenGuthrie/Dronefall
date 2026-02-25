@@ -70,18 +70,63 @@ public class AudioManager : MonoBehaviour
 
         if (count <= 1)
         {
-            FireOneShot(audioDef);
+            var clip = GetRandomClip(audioDef);
+            FireOneShot(audioDef, clip);
         }
         else
         {
             StartCoroutine(PlayAudioIterative(audioDef, count));
         }
     }
-    private void FireOneShot(AudioDefinition audioDef)
+
+    /// <summary>
+    /// Plays 3D audio attached to a specific transform. Returns the AudioSource so you can stop it manually later.
+    /// </summary>
+    public AudioSource PlayAttachedAudio(string audioName, Transform targetParent, float maxDistance = 50f, float minDistance = 1f)
     {
+        var audioDef = GetAudioDefinition(audioName);
         var source = GetAvailableSource();
+        var clip = GetRandomClip(audioDef);
+
+        if (clip == null) return null;
+
+        // Attach and reset position
+        source.transform.SetParent(targetParent);
+        source.transform.localPosition = Vector3.zero;
+
+        // Setup 3D settings
+        source.spatialBlend = 1f; // 1 means completely 3D (0 means 2D global)
+        source.dopplerLevel = 0;
+        // CHANGED: This forces a straight line from max volume to zero volume!
+        source.rolloffMode = AudioRolloffMode.Linear; 
         
-        source.clip = audioDef.SoundClip;
+        // At this distance or closer, the sound is at 100% volume
+        source.minDistance = minDistance; 
+        
+        // At this distance or further, the sound is at exactly 0% volume
+        source.maxDistance = maxDistance;
+
+        source.clip = clip;
+        source.outputAudioMixerGroup = audioDef.MixerGroup;
+        source.loop = audioDef.Loop;
+        
+        source.pitch = UnityEngine.Random.Range(audioDef.Pitch + audioDef.RandomPitchOffset.x, audioDef.Pitch + audioDef.RandomPitchOffset.y);
+        source.volume = UnityEngine.Random.Range(audioDef.Volume + audioDef.RandomVolumeOffset.x, audioDef.Volume + audioDef.RandomVolumeOffset.y); 
+
+        source.Play();
+
+        // Return the source so the calling script (like your Drone) can call source.Stop() when it crashes
+        return source;
+    }
+
+    private void FireOneShot(AudioDefinition audioDef, AudioClip clipToPlay)
+    {
+        if (clipToPlay == null) return;
+
+        var source = GetAvailableSource();
+        ResetSourceTo2D(source); // Ensure it's not still acting as a 3D sound from a previous pool use
+        
+        source.clip = clipToPlay;
         source.outputAudioMixerGroup = audioDef.MixerGroup;
         source.loop = false;
         
@@ -90,12 +135,16 @@ public class AudioManager : MonoBehaviour
 
         source.Play();
     }
+    
     private IEnumerator PlayAudioIterative(AudioDefinition audioDef, int count)
     {
         for (int i = 0; i < count; i++)
         {
-            FireOneShot(audioDef);
-            yield return new WaitForSeconds(audioDef.SoundClip.length);
+            var clip = GetRandomClip(audioDef);
+            if (clip == null) yield break;
+
+            FireOneShot(audioDef, clip);
+            yield return new WaitForSeconds(clip.length);
         }
     }
 
@@ -106,8 +155,13 @@ public class AudioManager : MonoBehaviour
 
         var audioDef = GetAudioDefinition(audioName);
         var source = GetAvailableSource();
+        var clip = GetRandomClip(audioDef);
 
-        source.clip = audioDef.SoundClip;
+        if (clip == null) return;
+
+        ResetSourceTo2D(source);
+
+        source.clip = clip;
         source.outputAudioMixerGroup = audioDef.MixerGroup;
         source.loop = audioDef.Loop;
         source.pitch = audioDef.Pitch; 
@@ -132,7 +186,7 @@ public class AudioManager : MonoBehaviour
     {
         if (_activeTracks.TryGetValue(audioName, out var source))
         {
-            source.Stop();
+            if (source != null) source.Stop();
             _activeTracks.Remove(audioName); 
         }
     }
@@ -140,6 +194,10 @@ public class AudioManager : MonoBehaviour
     // --- POOLING SYSTEM ---
     private AudioSource GetAvailableSource()
     {
+        // Safety check: If a drone was destroyed while holding an AudioSource, the source gets destroyed too.
+        // This removes null references from our pool so we don't get errors.
+        _sourcePool.RemoveAll(source => source == null);
+
         foreach (var source in _sourcePool)
         {
             if (!source.isPlaying) return source;
@@ -147,6 +205,7 @@ public class AudioManager : MonoBehaviour
         
         return CreateNewAudioSource();
     }
+    
     private AudioSource CreateNewAudioSource()
     {
         GameObject go = new GameObject($"AudioSource_Pool_{_sourcePool.Count}");
@@ -157,11 +216,18 @@ public class AudioManager : MonoBehaviour
         return newSource;
     }
 
+    private void ResetSourceTo2D(AudioSource source)
+    {
+        // Brings the source back to the manager and resets it to 2D
+        if (source.transform.parent != this.transform)
+        {
+            source.transform.SetParent(this.transform);
+            source.transform.localPosition = Vector3.zero;
+        }
+        source.spatialBlend = 0f;
+    }
+
     // --- SAVING/LOADING ---
-    /// <summary>
-    /// Serializes the current audio settings into a JSON string and writes it to a file.
-    /// This saves to Unity's Application.persistentDataPath (e.g., the AppData/LocalLow folder on Windows).
-    /// </summary>
     public void SaveSettings()
     {
         var json = JsonUtility.ToJson(_saveData, true);
@@ -177,9 +243,6 @@ public class AudioManager : MonoBehaviour
             Debug.LogError($"[AudioManager] Failed to save settings: {e.Message}");
         }
     }
-    /// <summary>
-    /// Reads the JSON file from Unity's Application.persistentDataPath and applies the saved volumes to the AudioMixer.
-    /// </summary>
     public void LoadSettings()
     {
         var path = Path.Combine(Application.persistentDataPath, SAVE_FILE_NAME);
@@ -191,10 +254,8 @@ public class AudioManager : MonoBehaviour
                 var json = File.ReadAllText(path);
                 JsonUtility.FromJsonOverwrite(json, _saveData);
                 
-                // Apply the loaded settings back to the mixer
                 for (var i = 0; i < _saveData.MixerParameters.Count; i++)
                 {
-                    // Assuming a standard -80 to 0 dB range for the mixer, adjust the Vector2 if your setup differs.
                     SetMixerVolume(_saveData.MixerParameters[i], _saveData.MixerVolumes[i], new Vector2(-80f, 0f));
                 }
                 
@@ -212,6 +273,25 @@ public class AudioManager : MonoBehaviour
     }
     
     // --- UTILITIES ---
+    private AudioClip GetRandomClip(AudioDefinition def)
+    {
+        if (def.SoundClips == null || def.SoundClips.Count == 0) return null;
+        if (def.SoundClips.Count == 1) return def.SoundClips[0];
+
+        int randomIndex = UnityEngine.Random.Range(0, def.SoundClips.Count);
+
+        if (def.PreventRepeat)
+        {
+            while (randomIndex == def.LastPlayedIndex)
+            {
+                randomIndex = UnityEngine.Random.Range(0, def.SoundClips.Count);
+            }
+        }
+
+        def.LastPlayedIndex = randomIndex;
+        return def.SoundClips[randomIndex];
+    }
+
     private void UpdateSaveDataMemory(string paramName, float normalizedVolume)
     {
         var index = _saveData.MixerParameters.IndexOf(paramName);
@@ -280,14 +360,17 @@ public class AudioDefinition
     public AudioType Type = AudioType.OneShot;
     public float Pitch;
     public float Volume;
-    public AudioClip SoundClip;
+    public List<AudioClip> SoundClips = new List<AudioClip>(); // List integration
     public AudioMixerGroup MixerGroup; 
 
     [Header("One Shot Audio Settings")] 
     public Vector2 RandomVolumeOffset = new Vector2(-0.1f, 0.1f); 
     public Vector2 RandomPitchOffset = new Vector2(-0.1f, 0.1f);
     public float SpamPreventionTime = 0.15f;
+    public bool PreventRepeat = true; 
+    
     internal float LastPlayedTime;
+    internal int LastPlayedIndex = -1;
     
     [Header("Track Settings")]
     public bool PlayOnStart;

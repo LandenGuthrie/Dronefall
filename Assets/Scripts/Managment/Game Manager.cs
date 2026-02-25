@@ -8,11 +8,13 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    [Header("Dependencies")]
+    [Header("Dependencies")] 
+    public Camera PlayerCamera;
     public TerrainGenerator TerrainGenerator;
     public GrassGenerator GrassGenerator;
     public FoliageGenerator FoliageGenerator;
     public EnemyGenerator EnemyGenerator;
+    public DroneManager DroneManager;
     
     [Header("Settings")]
     public RandomRangeNoiseSettings TerrainSettings; 
@@ -36,15 +38,15 @@ public class GameManager : MonoBehaviour
         TerrainGenerator.InitializeTerrainGenerator();
         FoliageGenerator.InitializeComputeShader();
         EnemyGenerator.InitializeEnemyGenerator();
+        DroneManager.InitializeDroneManager();
         GenerateRandomIsland();
     }
-
     public void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space)) GenerateRandomIsland();
     }
 
-    public void GenerateRandomIsland()
+    private void GenerateRandomIsland()
     {
         // Terrain
         var randomSeed = Random.Range(0, int.MaxValue);
@@ -81,6 +83,9 @@ public class GameManager : MonoBehaviour
             var sprite = Sprite.Create(tex, new Rect(Vector2.zero, new Vector2(tex.width, tex.height)), new Vector2(0.5f, 0.5f));
             GrassMaskViewImage.sprite = sprite;
         }
+        
+        // Drones
+        DroneManager.ReturnAllDronesToPool();
         
         // Enemies
         EnemyGenerator.ReturnAllEnemiesToPool();

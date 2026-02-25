@@ -1,5 +1,19 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!244 &-5896855192642117367
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 22f8586b384b02b418db4cd27f5b9fad
+  m_EffectName: Attenuation
+  m_MixLevel: dd094a997d3d5c44fb1f9c8238e63297
+  m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
 --- !u!244 &-3956042923841239675
 AudioMixerEffectController:
   m_ObjectHideFlags: 3
@@ -34,10 +48,13 @@ AudioMixerController:
     name: MasterVolume
   - guid: ccb9fe0b1e7745341aaa1410b743d9c8
     name: MusicVolume
+  - guid: 2111fea6bab24144daae024ff83f347d
+    name: SFXVolume
   m_AudioMixerGroupViews:
   - guids:
     - 51fae70d0c19fb54a8f00aea82c38133
     - 11c5e0598af739f4c94562367b46d430
+    - f5cd42c55f4706a4187bdba64ccd14e7
     name: View
   m_CurrentViewIndex: 0
   m_TargetSnapshot: {fileID: 24500006}
@@ -52,6 +69,7 @@ AudioMixerGroupController:
   m_GroupID: 51fae70d0c19fb54a8f00aea82c38133
   m_Children:
   - {fileID: 490485110604737468}
+  - {fileID: 3901528475617800702}
   m_Volume: 639e930aa5958e24a9bbfa9933481a63
   m_Pitch: b8295c93a47b3f44787a4acb63fa9756
   m_Send: 00000000000000000000000000000000
@@ -101,6 +119,25 @@ AudioMixerGroupController:
   m_Send: 00000000000000000000000000000000
   m_Effects:
   - {fileID: -3956042923841239675}
+  m_UserColorIndex: 0
+  m_Mute: 0
+  m_Solo: 0
+  m_BypassEffects: 0
+--- !u!243 &3901528475617800702
+AudioMixerGroupController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: SFX
+  m_AudioMixer: {fileID: 24100000}
+  m_GroupID: f5cd42c55f4706a4187bdba64ccd14e7
+  m_Children: []
+  m_Volume: 2111fea6bab24144daae024ff83f347d
+  m_Pitch: 69c061854563cb8488257b188287e1fb
+  m_Send: 00000000000000000000000000000000
+  m_Effects:
+  - {fileID: -5896855192642117367}
   m_UserColorIndex: 0
   m_Mute: 0
   m_Solo: 0
