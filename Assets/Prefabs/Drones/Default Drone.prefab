@@ -880,6 +880,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DroneBase
   DroneSettings:
     RotationOffset: {x: 0, y: 0, z: 0}
+    BobSpeed: 3
+    BobAmount: 0.5
     Wings:
     - {fileID: 2168903243806831833}
     - {fileID: 6781106307550714394}

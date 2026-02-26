@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class WeakEnemy : BaseEnemy
+public class Weak : EnemyBase
 {
     [Header("Configuration")]
     [SerializeField] private WeakEnemySettings EnemySettings;
