@@ -13,9 +13,9 @@ TagManager:
   - UI
   - Terrain
   - Placeable
-  - 
-  - 
-  - 
+  - Drone
+  - DroneCollidable
+  - Tower
   - 
   - 
   - 

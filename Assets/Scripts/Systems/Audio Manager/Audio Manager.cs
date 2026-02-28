@@ -78,10 +78,7 @@ public class AudioManager : MonoBehaviour
             StartCoroutine(PlayAudioIterative(audioDef, count));
         }
     }
-
-    /// <summary>
-    /// Plays 3D audio attached to a specific transform. Returns the AudioSource so you can stop it manually later.
-    /// </summary>
+    
     public AudioSource PlayAttachedAudio(string audioName, Transform targetParent, float maxDistance = 50f, float minDistance = 1f)
     {
         var audioDef = GetAudioDefinition(audioName);
@@ -92,6 +89,42 @@ public class AudioManager : MonoBehaviour
 
         // Attach and reset position
         source.transform.SetParent(targetParent);
+        source.transform.localPosition = Vector3.zero;
+
+        // Setup 3D settings
+        source.spatialBlend = 1f; // 1 means completely 3D (0 means 2D global)
+        source.dopplerLevel = 0;
+        // CHANGED: This forces a straight line from max volume to zero volume!
+        source.rolloffMode = AudioRolloffMode.Linear; 
+        
+        // At this distance or closer, the sound is at 100% volume
+        source.minDistance = minDistance; 
+        
+        // At this distance or further, the sound is at exactly 0% volume
+        source.maxDistance = maxDistance;
+
+        source.clip = clip;
+        source.outputAudioMixerGroup = audioDef.MixerGroup;
+        source.loop = audioDef.Loop;
+        
+        source.pitch = UnityEngine.Random.Range(audioDef.Pitch + audioDef.RandomPitchOffset.x, audioDef.Pitch + audioDef.RandomPitchOffset.y);
+        source.volume = UnityEngine.Random.Range(audioDef.Volume + audioDef.RandomVolumeOffset.x, audioDef.Volume + audioDef.RandomVolumeOffset.y); 
+
+        source.Play();
+
+        // Return the source so the calling script (like your Drone) can call source.Stop() when it crashes
+        return source;
+    }
+    public AudioSource PlayAtPosition(string audioName, Vector3 position, float maxDistance = 50f, float minDistance = 1f)
+    {
+        var audioDef = GetAudioDefinition(audioName);
+        var source = GetAvailableSource();
+        var clip = GetRandomClip(audioDef);
+
+        if (clip == null) return null;
+
+        // Attach and reset position
+        source.transform.position = position;
         source.transform.localPosition = Vector3.zero;
 
         // Setup 3D settings
@@ -304,6 +337,16 @@ public class AudioManager : MonoBehaviour
             _saveData.MixerParameters.Add(paramName);
             _saveData.MixerVolumes.Add(normalizedVolume);
         }
+    }
+    public float GetMixerVolume(string exposedParamName)
+    {
+        if (MainMixer == null)
+        {
+            Debug.LogError("[AudioManager] Main AudioMixer is not assigned!");
+            return -1;
+        }
+        MainMixer.GetFloat(exposedParamName, out var value);
+        return value;
     }
     public void SetMixerVolume(string exposedParamName, float normalizedVolume, Vector2 minMaxDb)
     {

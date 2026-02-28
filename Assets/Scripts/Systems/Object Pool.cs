@@ -14,7 +14,16 @@ public class ObjectPool<T> where T : class
     public virtual void OnObjectTakenFromPool(T obj) {}
     public virtual void OnObjectReturnedToPool(T obj) {}
     public virtual void OnObjectDestroyed(T obj) {}
-    
+
+    public T[] GetObjectsOutOfPool()
+    {
+        return (from obj in _objects where !obj.Value select obj.Key).ToArray();
+    }
+    public T[] GetObjectsInPool()
+    {
+        return (from obj in _objects where obj.Value select obj.Key).ToArray();
+    }
+
     public T GetFromPool()
     {
         // Expanding if there are no objects in pool

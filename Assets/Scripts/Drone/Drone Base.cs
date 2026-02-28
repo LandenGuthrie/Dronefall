@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
 public class DroneBase : MonoBehaviour
 {
     public const float INITIAL_PLACEMENT_HEIGHT = 5;
-    public const float MINIMUM_REACHED_DISTANCE = 0.1f;
+    public const float MINIMUM_REACHED_DISTANCE = 0.05f;
     
     [SerializeField] private DroneSettings DroneSettings;
     [SerializeField] private DroneControlSettings ControlSettings;
@@ -16,20 +15,29 @@ public class DroneBase : MonoBehaviour
     public Vector3 StartPosition { get; private set; }
     public Vector3 TargetPosition { get; private set; }
     public bool TargetReached { get; private set; }
-
-    public void Start()
-    {
-        _rb = GetComponent<Rigidbody>();
-    }
+    public DroneState CurrentState { get; private set; }
+    
     public void Update() => OnUpdate();
     public void OnDrawGizmos()
     {
-        if (_currentState == DroneState.Flying) Gizmos.DrawSphere(TargetPosition, 1f);
+        if (CurrentState == DroneState.Flying) Gizmos.DrawSphere(TargetPosition, 0.5f);
+        Gizmos.DrawSphere(transform.position, DroneSettings.CollisionRadius);
     }
-    
+
+    public void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.layer == GameManager.Instance.DroneManager.DroneCollidable)
+        {
+            GameManager.Instance.DroneManager.PlayExplosionParticle(transform.position);
+            AudioManager.Instance.PlayAtPosition("Explosion", transform.position, 200, 2);
+            _droneSounds.Stop();
+            GameManager.Instance.DroneManager.ReturnDroneToPool(gameObject, Type);
+        }
+    }
+
     public virtual void OnUpdate()
     {
-        if (TargetReached || _currentState == DroneState.None) return;
+        if (TargetReached || CurrentState == DroneState.None) return;
 
         // Updating visuals
         UpdateDroneVisuals();
@@ -37,27 +45,28 @@ public class DroneBase : MonoBehaviour
         // Updating wings
         foreach (var wing in DroneSettings.Wings)
         {
-            wing.Rotate(new Vector3(0, Time.deltaTime * ControlSettings.BaseSpeed * 50, 0));
+            wing.Rotate(new Vector3(0, Time.deltaTime * ControlSettings.BaseSpeed * 100, 0));
         }
         
-        switch (_currentState)
+        switch (CurrentState)
         {
             case DroneState.Positioning:
                 UpdateDroneStartPosition();
                 if (Input.GetKeyDown(GameManager.Instance.DroneManager.PlaceKey))
                 {
-                    _currentState = DroneState.AdjustingHeight;
+                    CurrentState = DroneState.AdjustingHeight;
                 }
                 break;
             case DroneState.AdjustingHeight:
                 UpdateDroneHeight();
                 if (Input.GetKeyDown(GameManager.Instance.DroneManager.CancelKey))
                 {
-                    _currentState = DroneState.Positioning;
+                    CurrentState = DroneState.Positioning;
                     return;
                 }
                 if (Input.GetKeyUp(GameManager.Instance.DroneManager.PlaceKey))
                 {
+                    GameManager.Instance.DroneManager.CanSpawnDrone = true;
                     PlaceDrone();
                 }
                 break;
@@ -70,16 +79,28 @@ public class DroneBase : MonoBehaviour
     public virtual void OnTargetReached()
     {
         GameManager.Instance.DroneManager.PlayExplosionParticle(transform.position);
-        AudioManager.Instance.PlayAttachedAudio("Explosion", transform, 200, 2);
+        AudioManager.Instance.PlayAtPosition("Explosion", transform.position, 200, 2);
+        
+        // Checking if collided with tower
+        var collidersInSphere = Physics.OverlapSphere(transform.position, DroneSettings.CollisionRadius, GameManager.Instance.EnemyGenerator.TowerLayers);
+        if (collidersInSphere.Length > 0)
+        {
+            foreach (var tower in collidersInSphere)
+            {
+                GameManager.Instance.EnemyGenerator.ReturnEnemyToPool(tower.gameObject);
+            }
+        }
+        
+        GameManager.Instance.DroneManager.ReturnDroneToPool(gameObject, Type);
+        // Returning drone to pool
         _droneSounds.Stop();
-        _rb.isKinematic = false;
     }
     public virtual void ResetDrone()
     {
         TargetReached = false;
         StartPosition = Vector3.zero;
         TargetPosition = Vector3.zero;
-        _currentState = DroneState.None;
+        CurrentState = DroneState.None;
         
         transform.position = Vector3.zero;
         transform.rotation = Quaternion.identity;
@@ -89,7 +110,7 @@ public class DroneBase : MonoBehaviour
     public void UseDrone()
     {
         _droneSounds = AudioManager.Instance.PlayAttachedAudio("Drone", transform, 200, 2);
-        _currentState = DroneState.Positioning;
+        CurrentState = DroneState.Positioning;
     }
     
     private void UpdateDroneStartPosition()
@@ -135,11 +156,11 @@ public class DroneBase : MonoBehaviour
     
         if (!Physics.Raycast(ray, out var hit)) 
         {
-            _currentState = DroneState.Positioning;
+            CurrentState = DroneState.Positioning;
             return;
         }
 
-        _currentState = DroneState.Flying;
+        CurrentState = DroneState.Flying;
         StartPosition = transform.position;
         TargetPosition = hit.point; 
     }
@@ -167,7 +188,7 @@ public class DroneBase : MonoBehaviour
 
     private void UpdateDroneVisuals()
     {
-        if (_currentState != DroneState.Flying)
+        if (CurrentState != DroneState.Flying)
         {
             var floorRay = new Ray(transform.position, Vector3.down);
             if (!Physics.Raycast(floorRay, out var hit)) return;
@@ -236,9 +257,7 @@ public class DroneBase : MonoBehaviour
         return Mathf.Clamp01(t);
     }
 
-    private Rigidbody _rb;
     private AudioSource _droneSounds;
-    private DroneState _currentState = DroneState.None;
 }
 
 [Serializable]
@@ -249,7 +268,8 @@ public struct DroneSettings
     public float BobSpeed;
     public float BobAmount;
     public List<Transform> Wings;
-
+    public float CollisionRadius;
+    
     [Header("Visuals")] 
     public LineRenderer DroneToFloorLine;
     public LineRenderer DroneToTargetLine;

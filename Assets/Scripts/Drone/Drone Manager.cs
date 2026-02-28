@@ -9,15 +9,23 @@ public class DroneManager : MonoBehaviour
     [SerializeField] private List<ParticleSystem> ExplosionParticles;
     [SerializeField] private List<DroneDefinition> Drones;
 
-    public LayerMask PlaceableLayers;
+    [Header("Settings")]
+    [SerializeField] private LayerMask PlaceableLayers;
+    public int DroneCollidable;
     public KeyCode PlaceKey;
     public KeyCode CancelKey;
+    public KeyCode PlaceDrone;
+    
+    public bool CanSpawnDrone { get; set; } = true;
+    
+    public event Action<DroneBase> DronePlaced;
     
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse2))
+        if (Input.GetKeyDown(PlaceDrone) && CanSpawnDrone)
         {
             UseDrone(DroneType.Default);
+            CanSpawnDrone = false;
         }
     }
 
@@ -61,7 +69,15 @@ public class DroneManager : MonoBehaviour
         var drone = _dronePools[type].GetFromPool();
         
         drone.SetActive(true);
-        if (drone.TryGetComponent(out DroneBase droneComp)) droneComp.UseDrone();
+        if (drone.TryGetComponent(out DroneBase droneComp))
+        {
+            DronePlaced?.Invoke(droneComp);
+            droneComp.UseDrone();
+        }
+    }
+    public void ReturnDroneToPool(GameObject drone, DroneType type)
+    {
+        _dronePools[type].ReturnToPool(drone);
     }
     public void ReturnAllDronesToPool()
     {
@@ -72,6 +88,15 @@ public class DroneManager : MonoBehaviour
     }
     
     // --- Util ---
+    public List<GameObject> GetActiveDrones()
+    {
+        var activeDrones = new List<GameObject>();
+        foreach (var pool in _dronePools)
+        {
+            activeDrones.AddRange(pool.Value.GetObjectsOutOfPool());
+        }
+        return activeDrones;
+    }
     private GameObject GetDronePrefabFromType(DroneType type)
     {
         foreach (var drone in Drones.Where(drone => drone.Type == type))

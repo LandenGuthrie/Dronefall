@@ -13,6 +13,8 @@ public class EnemyGenerator : MonoBehaviour
     [SerializeField] private Bounds WorldSpawningBounds;
     [SerializeField] private LayerMask TerrainLayers;
 
+    public LayerMask TowerLayers;
+    
     public void InitializeEnemyGenerator() => CreateEnemyCache();
     private void CreateEnemyCache()
     {
@@ -66,6 +68,11 @@ public class EnemyGenerator : MonoBehaviour
     
     public void PlaceEnemy(EnemyType type, Vector3 position, Quaternion rotation) =>
         _enemyPools[type].GetEnemyFromPool(position, rotation);
+    public void ReturnEnemyToPool(GameObject enemy)
+    {
+        var enemyComp = enemy.GetComponentInChildren<EnemyBase>();
+        _enemyPools[enemyComp.Type].ReturnToPool(enemy);
+    }
     public void ReturnAllEnemiesToPool()
     {
         foreach (var pool in _enemyPools) pool.Value.ReturnAllToPool();

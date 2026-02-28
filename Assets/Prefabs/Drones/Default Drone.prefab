@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8937094224405956116}
   - component: {fileID: 1203599332835542228}
-  m_Layer: 2
+  m_Layer: 8
   m_Name: Drone To Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -152,7 +152,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4890246754136744136}
   - component: {fileID: 1359273828538316841}
-  m_Layer: 2
+  m_Layer: 8
   m_Name: Drone To Target
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -296,7 +296,7 @@ GameObject:
   - component: {fileID: 2106232886738155073}
   - component: {fileID: 5189586951954762868}
   - component: {fileID: 1803804337858968803}
-  m_Layer: 2
+  m_Layer: 8
   m_Name: Floor Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -397,7 +397,7 @@ GameObject:
   - component: {fileID: 5357887958151722105}
   - component: {fileID: 8132175226139980087}
   - component: {fileID: 2833498128335567142}
-  m_Layer: 2
+  m_Layer: 8
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -470,7 +470,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2188080963141688336}
-  m_Layer: 2
+  m_Layer: 8
   m_Name: Visuals
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -545,11 +545,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8391222552659086748, guid: 338686075af3df542a82223753491ad7, type: 3}
       propertyPath: m_Layer
-      value: 2
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: -7640558969779515294, guid: 338686075af3df542a82223753491ad7, type: 3}
       propertyPath: m_Layer
-      value: 2
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: -7023974396876390944, guid: 338686075af3df542a82223753491ad7, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -649,7 +649,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 6d7c165728e9eff488c320bc4cccc580, type: 2}
     - target: {fileID: -1857309847194865932, guid: 338686075af3df542a82223753491ad7, type: 3}
       propertyPath: m_Layer
-      value: 2
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: -1538112130698044685, guid: 338686075af3df542a82223753491ad7, type: 3}
       propertyPath: m_LocalScale.x
@@ -693,7 +693,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -1063203228461421988, guid: 338686075af3df542a82223753491ad7, type: 3}
       propertyPath: m_Layer
-      value: 2
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: -241587437493983680, guid: 338686075af3df542a82223753491ad7, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -705,11 +705,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 338686075af3df542a82223753491ad7, type: 3}
       propertyPath: m_Layer
-      value: 2
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 4767400413853537203, guid: 338686075af3df542a82223753491ad7, type: 3}
       propertyPath: m_Layer
-      value: 2
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 4865064391339405807, guid: 338686075af3df542a82223753491ad7, type: 3}
       propertyPath: m_LocalScale.x
@@ -793,7 +793,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6507901977716847365, guid: 338686075af3df542a82223753491ad7, type: 3}
       propertyPath: m_Layer
-      value: 2
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 7339356831882890532, guid: 338686075af3df542a82223753491ad7, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -852,9 +852,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 338686075af3df542a82223753491ad7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4360473092631916628}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 338686075af3df542a82223753491ad7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6986709730077598857}
   m_SourcePrefab: {fileID: 100100000, guid: 338686075af3df542a82223753491ad7, type: 3}
 --- !u!4 &2168903243806831833 stripped
 Transform:
@@ -887,12 +884,13 @@ MonoBehaviour:
     - {fileID: 6781106307550714394}
     - {fileID: 8730740713569401885}
     - {fileID: 4839396164829326205}
+    CollisionRadius: 2
     DroneToFloorLine: {fileID: 1203599332835542228}
     DroneToTargetLine: {fileID: 1359273828538316841}
     FloorVisual: {fileID: 5275599031735962593}
     FloorVisualOffset: {x: 0, y: 0.01, z: 0}
   ControlSettings:
-    BaseSpeed: 35
+    BaseSpeed: 12
     InlineStrength: 0
     PathMultiplier: 10
     FlightPathX:
@@ -901,44 +899,17 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 0
         value: 0
-        inSlope: -0.2590631
-        outSlope: -0.2590631
+        inSlope: 0
+        outSlope: 0
         tangentMode: 34
         weightedMode: 0
         inWeight: 0
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.1947293
-        value: -0.050447173
-        inSlope: 0.036054358
-        outSlope: 0.036054358
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.49982595
-        value: 0.050592236
-        inSlope: -0.003952205
-        outSlope: -0.003952205
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.79923326
-        value: -0.050929654
-        inSlope: -0.04270023
-        outSlope: -0.04270023
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
         time: 1
         value: 0
-        inSlope: 0.25367576
-        outSlope: 0.25367576
+        inSlope: 0
+        outSlope: 0
         tangentMode: 34
         weightedMode: 0
         inWeight: 0.33333334
@@ -952,44 +923,17 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 0
         value: 0
-        inSlope: -0.2590631
-        outSlope: -0.2590631
+        inSlope: 0
+        outSlope: 0
         tangentMode: 34
         weightedMode: 0
         inWeight: 0
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.1947293
-        value: -0.050447173
-        inSlope: 0.036054358
-        outSlope: 0.036054358
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.49982595
-        value: 0.050592236
-        inSlope: -0.003952205
-        outSlope: -0.003952205
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.79923326
-        value: -0.050929654
-        inSlope: -0.04270023
-        outSlope: -0.04270023
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
         time: 1
         value: 0
-        inSlope: 0.25367576
-        outSlope: 0.25367576
+        inSlope: 0
+        outSlope: 0
         tangentMode: 34
         weightedMode: 0
         inWeight: 0.33333334
@@ -1054,33 +998,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.61, y: 0.54, z: 1.27}
   m_Center: {x: 0, y: 0.16, z: 0}
---- !u!54 &6986709730077598857
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2688107813959437535}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!4 &3316271638301988453 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 338686075af3df542a82223753491ad7, type: 3}
